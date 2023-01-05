@@ -238,11 +238,15 @@ int main(int argc, char** argv) {
   std::string PACKAGE_PATH = ros::package::getPath(package_name);
 
   std::string config_file_path = PACKAGE_PATH + config_path;
+  std::cout << "Load config from: " << config_file_path << std::endl;
   YAML::Node config_node = YAML::LoadFile(config_file_path);
+  bool use_gui = config_node["use_gui"].as<bool>();
+  std::cout << "gui: " << use_gui << std::endl;
 
   CalibUI calib_ui(config_node);
 
-  bool use_gui = config_node["use_gui"].as<bool>();
+
+
   if (use_gui) {
     calib_ui.InitGui();
     calib_ui.RenderingLoop();

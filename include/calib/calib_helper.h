@@ -92,10 +92,10 @@ class LICalibrHelper {
   std::string topic_imu_;
   std::string topic_lidar_;
   std::string bag_name_;
-  std::shared_ptr<SegmentDatasetManager> segment_dataset_;
+  std::shared_ptr<SegmentDatasetManager> segment_dataset_ = nullptr;
 
   /// Optimization result
-  CalibParamManager::Ptr calib_param_manager_;
+  CalibParamManager::Ptr calib_param_manager_ = nullptr;
   Eigen::aligned_vector<Eigen::Vector3d> p_LinI_backup_;
   Eigen::aligned_vector<SO3d> so3_LtoI_backup_;
 

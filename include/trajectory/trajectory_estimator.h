@@ -110,12 +110,12 @@ class TrajectoryEstimator {
 
   void LockExtrinsicParam(bool lock_P, bool lock_R);
 
-  CalibParamManager::Ptr calib_param_;
+  CalibParamManager::Ptr calib_param_ = nullptr;
 
   TrajectoryEstimatorOptions options_;
 
-  std::shared_ptr<Trajectory> trajectory_;
-  std::shared_ptr<ceres::Problem> problem_;
+  std::shared_ptr<Trajectory> trajectory_ = nullptr;
+  std::shared_ptr<ceres::Problem> problem_ = nullptr;
   ceres::LocalParameterization* local_parameterization;
 
   bool callback_needs_state_;

@@ -48,6 +48,7 @@ class SegmentDatasetManager {
 
   SegmentDatasetManager(const YAML::Node& node,
                         const LidarModelType& lidar_model) {
+    std::cout << "SegmentDatasetManager 1" << std::endl;
     int segment_num = node["segment_num"].as<int>();
 
     const YAML::Node& segment_node = node["selected_segment"];
@@ -60,10 +61,11 @@ class SegmentDatasetManager {
       path_bag_vec_.push_back(path_bag);
       segment_timestamp_.push_back(segment_t);
     }
+    std::cout << "SegmentDatasetManager 2" << std::endl;
 
     std::string topic_imu = node["topic_imu"].as<std::string>();
     std::string topic_lidar = node["topic_lidar"].as<std::string>();
-
+   std::cout << "SegmentDatasetManager 2" << std::endl;
     for (int id = 0; id < segment_num; ++id) {
       auto v = &segment_timestamp_.at(id);
       double bag_start = v->first;
@@ -76,10 +78,13 @@ class SegmentDatasetManager {
 
       std::shared_ptr<liso::IO::LioDataset> dataset_reader;
       dataset_reader = std::make_shared<liso::IO::LioDataset>(lidar_model);
+      std::cout << "dataset_reader->Read 3" << std::endl;
+      std::cout << "read: " << bag_path << ", " << topic_imu <<", " << topic_imu << ", " << bag_start <<", " << bag_durr << std::endl;
       dataset_reader->Read(bag_path, topic_imu, topic_lidar, bag_start,
                            bag_durr);
+      std::cout << "ataset_reader->Read 4" << std::endl;
       dataset_reader->AdjustDatasetTime();
-
+      std::cout << "AddSegmentData 5" << std::endl;
       AddSegmentData(dataset_reader);
     }
 

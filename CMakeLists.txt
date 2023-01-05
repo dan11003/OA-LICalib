@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8.3)
 project(oa_licalib)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+ add_compile_options(-std=c++14)
 
 #SET(CXX_MARCH native)
 #set(CMAKE_CXX_FLAGS "-ftemplate-backtrace-limit=0  -march=${CXX_MARCH} -O3 -DBASALT_USE_CHOLMOD -DBASALT_DISABLE_ASSERTS -DNDEBUG")
 #set(CMAKE_CXX_FLAGS " -march=${CXX_MARCH} -O3")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE "RELEASE")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse4.2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse4.2 -Wall -Wextra")
 #add_definitions(-O3 -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2)
 
 find_package(OpenMP)

@@ -32,10 +32,13 @@ LICalibrHelper::LICalibrHelper(const YAML::Node& node)
   double associated_radius = 0.05;
   double plane_lambda = 0.6;
 
+
   // [1] Dataset
+  std::cout << "Load data" << std::endl;
   LoadDataset(node);
 
   // [2] Optimization result
+  std::cout << "Optimizer" << std::endl;
   calib_param_manager_ = std::make_shared<CalibParamManager>(node);
 
   p_LinI_backup_.resize(segment_dataset_->SegmentNum());

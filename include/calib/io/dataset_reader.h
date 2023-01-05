@@ -148,9 +148,10 @@ class LioDataset {
     }
   }
 
-  bool Read(const std::string path, const std::string imu_topic,
+  void Read(const std::string path, const std::string imu_topic,
             const std::string lidar_topic, const double bag_start = -1.0,
             const double bag_durr = -1.0, const std::string vicon_topic = "") {
+    std::cout  << "read 1" << std::endl;
     bag_.reset(new rosbag::Bag);
     bag_->open(path, rosbag::bagmode::Read);
     Init();
@@ -164,7 +165,7 @@ class LioDataset {
     if (lidar_model_ == LidarModelType::RS_16) {
       topics.push_back("/rslidar_packets_difop");
     }
-
+std::cout  << "read 2" << std::endl;
     rosbag::View view_full;
     view_full.addQuery(*bag_);
     ros::Time time_init = view_full.getBeginTime();
@@ -177,7 +178,7 @@ class LioDataset {
     view.addQuery(*bag_, rosbag::TopicQuery(topics), time_init - delta_durr,
                   time_finish + delta_durr);
     // bag_start_time_ = view_full.getBeginTime().toSec();
-
+/*
     if (lidar_model_ == LidarModelType::RS_16) {
       for (rosbag::MessageInstance const m : view) {
         const std::string &topic = m.getTopic();
@@ -188,7 +189,7 @@ class LioDataset {
           break;
         }
       }
-    }
+    }*/
 
     double first_imu_stamp = -1;
     for (rosbag::MessageInstance const m : view) {
@@ -215,6 +216,7 @@ class LioDataset {
           sensor_msgs::PointCloud2::ConstPtr scan_msg =
               m.instantiate<sensor_msgs::PointCloud2>();
           timestamp = scan_msg->header.stamp.toSec();
+
           vlp_point_convert_->get_organized_and_raw_cloud(scan_msg,
                                                           lidar_feature);
         }  //
@@ -233,7 +235,10 @@ class LioDataset {
 
         lidar_feature.time_max = 0;
 
-        if (first_imu_stamp < 0 || timestamp < first_imu_stamp) continue;
+        if (first_imu_stamp < 0 || timestamp < first_imu_stamp){
+         std::cout  << "read contibue - 3" << std::endl;
+            continue;
+        }
 
         scan_data_.push_back(lidar_feature);
         scan_timestamps_.emplace_back(timestamp);
@@ -292,6 +297,7 @@ class LioDataset {
     std::cout << imu_topic << ": " << imu_data_.size() << std::endl;
     if (!vicon_data_.empty())
       std::cout << vicon_topic << ": " << vicon_data_.size() << std::endl;
+
   }
 
   void AdjustIMUViconData() {

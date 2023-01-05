@@ -330,7 +330,7 @@ class CalibParamManager {
       ss << segment_t.first << "," << segment_t.second << "," << p_IinL(0)
          << "," << p_IinL(1) << "," << p_IinL(2) << "," << q_ItoL.x() << ","
          << q_ItoL.y() << "," << q_ItoL.z() << "," << q_ItoL.w() << ","
-         << v.time_offset << "," << v.g_refine(0) << "," << v.gravity(1) << ","
+         << v.time_offset << "," << v.g_refine(0) << "," << v.g_refine(1) << ","
          << v.gravity(0) << "," << v.gravity(1) << "," << v.gravity(2) << ","
          << v.gyro_bias(0) << "," << v.gyro_bias(1) << "," << v.gyro_bias(2)
          << "," << v.acce_bias(0) << "," << v.acce_bias(1) << ","

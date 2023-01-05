@@ -1,5 +1,5 @@
 # bag
-topic_lidar: /scan_sim # /velodyne_packets #
+topic_lidar: /scan_sim #
 topic_imu: /imu_sim
 
 LidarModel: VLP_16_SIMU
@@ -17,7 +17,7 @@ use_gui: false
 # 当 segment_num = 1时，即用一段数据标定
 segment_num: 1
 selected_segment:
-  - {start_time: 0, end_time: 7, path_bag: /home/ha/catkin_oa_calib/src/OA-LICalib/data/bag/simu_bag.bag}
+  - {start_time: 0, end_time: 7, path_bag: /home/daniel/ros/1calib_ws/src/OA-LICalib/data/bag/simu_bag.bag}
 
 
 # 平面运动时，旋转外参无法初始化
@@ -33,7 +33,7 @@ lock_accel_bias: false
 opt_timeoffset: false
 timeoffset_padding: 0.01
 
-opt_lidar_intrinsic: true
+opt_lidar_intrinsic: false
 opt_IMU_intrinsic: true
 
 iteration_num: 14
@@ -43,8 +43,8 @@ extrinsic:
   Trans: [0.25, 0.13, 0.07]
   Trans_prior: [0.25, 0.13, 0.07]
 
-  Rot: [1, 0, 0,
-       0, 1, 0,
+  Rot: [-1, 0, 0,
+       0, -1, 0,
        0, 0, 1]
 
   # Trans: [0.3, 0.15, 0.05]

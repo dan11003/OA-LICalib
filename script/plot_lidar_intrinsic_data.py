@@ -18,7 +18,7 @@ def load_lidar_intrinsic_data():
     df = pd.DataFrame()
     lidar_gt = pd.DataFrame()
     for filename in filenames:
-        print "Load lidar intrinsic data from ", filename
+        print ("Load lidar intrinsic data from ", filename)
         
         data = pd.read_csv(filename, ',')
         dsr_col = np.abs(np.array(range(16)) - 15)
@@ -41,7 +41,7 @@ def load_lidar_intrinsic_data():
     for idx in range(6):
         lidar_list[idx] = np.array(lidar_list[idx]).T
     
-    print lidar_gt.columns
+    print (lidar_gt.columns)
     return lidar_list, lidar_gt
  
 if __name__ == "__main__":
