@@ -18,7 +18,7 @@ use_gui: false
 
 segment_num: 1
 selected_segment:
-  - {start_time: 10, end_time: 40, path_bag: /home/daniel/Documents/HEMMA_kali_230105.bag} # set path to bag file, 10 first seconds are ignored. 30 seconds of data is used
+  - {start_time: 10, end_time: 40, path_bag: /home/slam/Documents/HEMMA_kali_230105.bag} # set path to bag file, 10 first seconds are ignored. 30 seconds of data is used
 
 
 
