@@ -4,5 +4,5 @@
 
 - git:
    local-name: ros_rslidar
-   uri: https://github.com/RoboSense-LiDAR/ros_rslidar.git
+   uri: git@github.com:dan11003/ros_rslidar.git
 
