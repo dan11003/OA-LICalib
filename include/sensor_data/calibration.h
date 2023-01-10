@@ -319,6 +319,8 @@ class CalibParamManager {
   std::string ParamString() const {
     Eigen::Quaterniond q_ItoL = q_LtoI.inverse();
     Eigen::Vector3d p_IinL = q_ItoL * (-p_LinI);
+    Eigen::Matrix3d R = q_ItoL.normalized().toRotationMatrix(); // daniel added output
+    std::cout << "extrinsics" << std::endl << R << std::endl; //daniel added output
 
     std::stringstream ss;
 
