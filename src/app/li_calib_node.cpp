@@ -26,19 +26,22 @@
 #include <ros/ros.h>
 #include <trajectory/trajectory_viewer.h>
 #include <string>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
+
 
 using namespace liso;
 
 class CalibUI : public LICalibrHelper {
- public:
-  CalibUI(const YAML::Node& config_node)
-      : LICalibrHelper(config_node),
-        iteration_num_(1),
-        pan_opt_time_offset_("ui.opt_time_offset", false, false, true),
-        pan_opt_lidar_intrinsic_("ui.opt_lidar_intrinsic", false, false, true),
-        pan_opt_imu_intrinsic_("ui.opt_imu_intrinsic", false, false, true),
-        pan_apply_lidar_intrinstic_("ui.apply_lidar_intrinstic", false, false,
-                                    true) {
+public:
+  CalibUI(const YAML::Node& config_node, StructorPars& pars)
+    : LICalibrHelper(config_node,pars) ,
+      iteration_num_(1),
+      pan_opt_time_offset_("ui.opt_time_offset", false, false, true),
+      pan_opt_lidar_intrinsic_("ui.opt_lidar_intrinsic", false, false, true),
+      pan_opt_imu_intrinsic_("ui.opt_imu_intrinsic", false, false, true),
+      pan_apply_lidar_intrinstic_("ui.apply_lidar_intrinstic", false, false,true) {
     if (config_node["iteration_num"])
       iteration_num_ = config_node["iteration_num"].as<int>();
   }
@@ -52,21 +55,21 @@ class CalibUI : public LICalibrHelper {
                                           pangolin::Attach::Pix(UI_WIDTH));
 
     pangolin::Var<std::function<void(void)>> initialization(
-        "ui.Initialization", std::bind(&CalibUI::Initialization, this));
+                                               "ui.Initialization", std::bind(&CalibUI::Initialization, this));
 
     pangolin::Var<std::function<void(void)>> data_association_in_odom(
-        "ui.DataAssociationInOdom",
-        std::bind(&CalibUI::DataAssociationInOdom, this));
+                                               "ui.DataAssociationInOdom",
+                                               std::bind(&CalibUI::DataAssociationInOdom, this));
 
     pangolin::Var<std::function<void(void)>> data_association_in_locator(
-        "ui.DataAssociationInLocator",
-        std::bind(&CalibUI::DataAssociationInLocator, this));
+                                               "ui.DataAssociationInLocator",
+                                               std::bind(&CalibUI::DataAssociationInLocator, this));
 
     pangolin::Var<std::function<void(void)>> batch_optimization(
-        "ui.BatchOptimization", std::bind(&CalibUI::BatchOptimization, this));
+                                               "ui.BatchOptimization", std::bind(&CalibUI::BatchOptimization, this));
 
     pangolin::Var<std::function<void(void)>> refinement(
-        "ui.Refinement", std::bind(&CalibUI::Refinement, this));
+                                               "ui.Refinement", std::bind(&CalibUI::Refinement, this));
 
     std::cout << "\nInitUI Done. \n";
   }
@@ -95,8 +98,7 @@ class CalibUI : public LICalibrHelper {
 
     timer.tic();
     this->Initialization();
-    std::cout << "[Paper] Initialization costs " << std::fixed
-              << std::setprecision(2) << timer.toc() << " ms\n";
+    std::cout << "[Paper] Initialization costs " << std::fixed << std::setprecision(2) << timer.toc() << " ms\n";
 
     // if has map, then use locator
     if (this->calib_param_manager_->locator_segment_param.empty()) {
@@ -114,9 +116,9 @@ class CalibUI : public LICalibrHelper {
 
     for (size_t iter = 1; iter < iteration_num_; iter++) {
       if (iter > 1) {
-        this->calib_param_manager_->calib_option.opt_lidar_intrinsic = true;
-        this->calib_param_manager_->calib_option.opt_IMU_intrinsic = true;
-        this->calib_param_manager_->calib_option.opt_time_offset = true;
+        this->calib_param_manager_->calib_option.opt_lidar_intrinsic = false;
+        this->calib_param_manager_->calib_option.opt_IMU_intrinsic = false;
+        this->calib_param_manager_->calib_option.opt_time_offset = false;
       }
       timer.tic();
       this->Refinement();
@@ -205,16 +207,16 @@ class CalibUI : public LICalibrHelper {
     for (size_t dsr = 0; dsr < 16; dsr++) {
       std::vector<double> v = laser_param_vec.at(order[dsr]);
       lidar_file << v[0] << ","               //
-                 << v[1] * 1000 << ","        //
-                 << v[2] * 1000 << ","        //
-                 << v[3] * 1000 << ","        //
-                 << v[4] * 180 / M_PI << ","  //
-                 << v[5] * 180 / M_PI << std::endl;
+                         << v[1] * 1000 << ","        //
+                         << v[2] * 1000 << ","        //
+                         << v[3] * 1000 << ","        //
+                         << v[4] * 180 / M_PI << ","  //
+                         << v[5] * 180 / M_PI << std::endl;
     }
     lidar_file.close();
   }
 
- private:
+private:
   int iteration_num_;
 
   static constexpr int UI_WIDTH = 300;
@@ -223,27 +225,73 @@ class CalibUI : public LICalibrHelper {
   pangolin::Var<bool> pan_opt_lidar_intrinsic_;
   pangolin::Var<bool> pan_opt_imu_intrinsic_;
   pangolin::Var<bool> pan_apply_lidar_intrinstic_;
+  StructorPars pars_;
 };
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "li_calib_node");
   ros::NodeHandle nh("~");
 
+
+  po::options_description desc{"Options"};
+  desc.add_options()
+      ("help,h", "Help screen")
+      ("output_path", po::value<std::string>()->default_value(""), "res")
+      ("config_file", po::value<std::string>()->default_value(""), "res")
+      ("start_time", po::value<double>()->default_value(-1.0), "res")
+      ("end_time", po::value<double>()->default_value(-1.0), "range resolution");
+
+
+  po::variables_map vm;
+  store(parse_command_line(argc, argv, desc), vm);
+  notify(vm);
+
+  StructorPars sPar;
   liso::publisher::SetPublisher(nh);
 
-  std::string config_path;
-  nh.param<std::string>("config_path", config_path, "/config/li-calib.yaml");
 
-  std::string package_name = "oa_licalib";
-  std::string PACKAGE_PATH = ros::package::getPath(package_name);
+  std::string config_file_path;
 
-  std::string config_file_path = PACKAGE_PATH + config_path;
+  if (vm.count("config_file")){
+    cout << "config file provided" << endl;
+    //double start_time = vm["start_time"].as<int>();
+    config_file_path = vm["config_file"].as<std::string>();
+    std::cout << "yaml path boost: " << config_file_path <<std::endl;;
+
+  }else{
+    cout << "No config file provided" << endl;
+    std::string config_path;
+    nh.param<std::string>("config_path", config_path, "/config/li-calib.yaml");
+    std::string package_name = "oa_licalib";
+    std::string PACKAGE_PATH = ros::package::getPath(package_name);
+    config_file_path = PACKAGE_PATH + config_path;
+  }
+
+
   std::cout << "Load config from: " << config_file_path << std::endl;
   YAML::Node config_node = YAML::LoadFile(config_file_path);
   bool use_gui = config_node["use_gui"].as<bool>();
   std::cout << "gui: " << use_gui << std::endl;
 
-  CalibUI calib_ui(config_node);
+
+  std::cout  <<"Default: " << config_node["selected_segment"][0]["start_time"] << ", " << config_node["selected_segment"][0]["end_time"] << endl; //<< ", " << config_node["selected_segment"][0]  << std::endl;
+  if (vm.count("start_time")){
+    sPar.start_time = vm["start_time"].as<double>();
+    config_node["selected_segment"][0]["start_time"] = sPar.start_time;
+  }
+  if (vm.count("end_time")){
+    sPar.end_time = vm["end_time"].as<double>();
+    config_node["selected_segment"][0]["end_time"]  = sPar.end_time;
+  }
+  if(vm.count("output_path")){
+    config_node["output_path"] = vm["output_path"].as<std::string>();
+  }
+  std::cout  <<"after: " << config_node["selected_segment"][0]["start_time"]  << ", " << config_node["selected_segment"][0]["end_time"] << ", output: " << config_node["output_path"] << std::endl;
+
+
+
+
+  CalibUI calib_ui(config_node, sPar);
 
 
 

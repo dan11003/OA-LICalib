@@ -47,7 +47,7 @@ class SegmentDatasetManager {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   SegmentDatasetManager(const YAML::Node& node,
-                        const LidarModelType& lidar_model) {
+                        const LidarModelType& lidar_model, StructorPars& pars) : structorPars_(pars) {
     std::cout << "SegmentDatasetManager 1" << std::endl;
     int segment_num = node["segment_num"].as<int>();
 
@@ -174,6 +174,8 @@ class SegmentDatasetManager {
 
   // raw data
   std::vector<SegmentDataset> segment_dataset_vec_;
+
+   StructorPars structorPars_;
 };
 
 }  // namespace liso

@@ -24,8 +24,8 @@
 
 namespace liso {
 
-LICalibrHelper::LICalibrHelper(const YAML::Node& node)
-    : calib_step_(Start), iteration_num_(0) {
+LICalibrHelper::LICalibrHelper(const YAML::Node& node, StructorPars& pars)
+  : node_(node), structorPars_(pars), calib_step_(Start), iteration_num_(0) {
   double knot_distance = node["knot_distance"].as<double>();
 
   // data association parameters
@@ -113,7 +113,7 @@ void LICalibrHelper::LoadDataset(const YAML::Node& node) {
   }
 
   segment_dataset_ =
-      std::make_shared<SegmentDatasetManager>(node, lidar_model_type);
+      std::make_shared<SegmentDatasetManager>(node, lidar_model_type, structorPars_);
 
   topic_imu_ = node["topic_imu"].as<std::string>();
   topic_lidar_ = node["topic_lidar"].as<std::string>();
@@ -447,27 +447,45 @@ void LICalibrHelper::SaveCalibResult(
 }
 
 void LICalibrHelper::SavePointCloud() const {
+  if(iteration_num_>1)
+    return;
   if (0 == iteration_num_) {
-    for (size_t id = 0; id < segment_dataset_->SegmentNum(); ++id) {
+   /* for (size_t id = 0; id < segment_dataset_->SegmentNum(); ++id) {
       std::string surfel_path =
           cache_path_ + "/ndt_surfel_map-seg" + std::to_string(id) + ".pcd";
       surfel_association_vec_.at(id)->SaveSurfelsMap(surfel_path);
       //      lidar_odom_->SaveGlobalMap(cache_path_ + "/ndt_map.pcd");
-    }
+    }*/
   } else {
     for (size_t id = 0; id < segment_dataset_->SegmentNum(); ++id) {
       std::string suffix =
           std::to_string(iteration_num_) + "-seg" + std::to_string(id) + ".pcd";
 
       std::string map_path = cache_path_ + "/refined_map-iter" + suffix;
-      pcl::io::savePCDFileBinaryCompressed(
-          map_path, *(scan_undistortion_vec_.at(id)->get_map_cloud()));
+      const std::string path = node_["output_path"].as<std::string>(); //+ suffix; //.as<std::string>();;
+      if(!path.empty()){
+        std::cout << "*********************Save***************" << std::endl;
+        ros::Time t = ros::Time::now();
+        std::string filename = path + str( boost::format("/%lf_%lf") % t.sec % t.nsec);
+        std::cout << filename << std::endl;
+        pcl::io::savePCDFileBinaryCompressed( filename+".pcd", *(scan_undistortion_vec_.at(id)->get_map_cloud()));
+        std::ofstream data_ofs(filename + ".odom");
+        Eigen::Matrix<double,4,4> mat = Eigen::Matrix4d::Identity();
+        data_ofs << mat(0,0) << " " << mat(0,1) << " " << mat(0,2) << " " << mat(0,3) << std::endl;
+        data_ofs << mat(1,0) << " " << mat(1,1) << " " << mat(1,2) << " " << mat(1,3) << std::endl;
+        data_ofs << mat(2,0) << " " << mat(2,1) << " " << mat(2,2) << " " << mat(2,3) << std::endl;
+        data_ofs << mat(3,0) << " " << mat(3,1) << " " << mat(3,2) << " " << mat(3,3) << std::endl;
+        data_ofs.close();
+      }else{
+      pcl::io::savePCDFileBinaryCompressed( map_path, *(scan_undistortion_vec_.at(id)->get_map_cloud()));
       std::cout << "Save refined map to " << map_path << "; size: "
                 << scan_undistortion_vec_.at(id)->get_map_cloud()->size()
                 << std::endl;
+      }
 
-      std::string surfel_path = cache_path_ + "/surfel_map-iter" + suffix;
-      surfel_association_vec_.at(id)->SaveSurfelsMap(surfel_path);
+
+      /*std::string surfel_path = cache_path_ + "/surfel_map-iter" + suffix;
+      surfel_association_vec_.at(id)->SaveSurfelsMap(surfel_path);*/
     }
   }
 }

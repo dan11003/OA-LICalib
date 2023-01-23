@@ -29,8 +29,12 @@
 #include <calib/calib_tool.h>
 #include <calib/io/segment_dataset.h>
 #include <calib/lidar_localization.h>
+using std::cout; using std::endl;
 
 namespace liso {
+
+
+
 
 enum CalibStep {
   Error = 0,
@@ -46,7 +50,7 @@ class LICalibrHelper {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  explicit LICalibrHelper(const YAML::Node& node);
+  explicit LICalibrHelper(const YAML::Node& node,  StructorPars& pars);
 
   void Initialization();
 
@@ -84,6 +88,7 @@ class LICalibrHelper {
     so3_LtoI_backup_.at(id) = calib_param_manager_->so3_LtoI;
   }
 
+  StructorPars structorPars_;
   CalibStep calib_step_;
 
   /// Dataset
@@ -106,6 +111,7 @@ class LICalibrHelper {
   std::vector<std::shared_ptr<Trajectory>> trajectory_vec_;
 
   int iteration_num_;
+  const YAML::Node& node_;
 };
 
 }  // namespace liso

@@ -51,6 +51,14 @@
 #include <fstream>
 #include <random>
 
+typedef struct
+{
+  std::string folder;
+  int start_time;
+  int end_time;
+  bool replace = true;
+}StructorPars;
+
 namespace liso {
 
 namespace IO {

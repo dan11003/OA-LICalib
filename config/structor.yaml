@@ -18,7 +18,7 @@ use_gui: false
 
 segment_num: 1
 selected_segment:
-  - {start_time: 10, end_time: 40, path_bag: /home/slam/Documents/HEMMA_kali_230105.bag} # set path to bag file, 10 first seconds are ignored. 30 seconds of data is used
+  - {start_time: 25, end_time: 40, path_bag: /home/daniel/rosbag/structor/LIOSAM_test_kali.bag} # set path to bag file, 10 first seconds are ignored. 30 seconds of data is used
 
 
 
@@ -37,7 +37,7 @@ timeoffset_padding: 0.01
 opt_lidar_intrinsic: true
 opt_IMU_intrinsic: true
 
-iteration_num: 7  # number of calls of the refinement routine.
+iteration_num: 2  # number of calls of the refinement routine.
 
 # For CalibParamManager
 extrinsic:

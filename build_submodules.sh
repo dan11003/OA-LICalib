@@ -17,7 +17,7 @@ fi
 # https://stackoverflow.com/a/45181694
 NUM_CORES=`getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu || echo 1`
 
-NUM_PARALLEL_BUILDS=$NUM_CORES
+NUM_PARALLEL_BUILDS=2 #$NUM_CORES
 
 CXX_MARCH=native
 
