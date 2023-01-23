@@ -30,7 +30,7 @@ do
   output_path="${output_dir_counter}"
   pars="--config_file ${config_file} --start_time ${start} --end_time ${end} --output_path ${output_path} " 
   echo "  rosrun oa_licalib li_calib_node  $pars"
-#  rosrun oa_licalib li_calib_node ${pars} &> /dev/null
+  rosrun oa_licalib li_calib_node ${pars} &> /dev/null
 done
 
 
