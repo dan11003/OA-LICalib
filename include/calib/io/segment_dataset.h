@@ -78,13 +78,13 @@ class SegmentDatasetManager {
 
       std::shared_ptr<liso::IO::LioDataset> dataset_reader;
       dataset_reader = std::make_shared<liso::IO::LioDataset>(lidar_model);
-      std::cout << "dataset_reader->Read 3" << std::endl;
+
       std::cout << "read: " << bag_path << ", " << topic_imu <<", " << topic_imu << ", " << bag_start <<", " << bag_durr << std::endl;
       dataset_reader->Read(bag_path, topic_imu, topic_lidar, bag_start,
                            bag_durr);
-      std::cout << "ataset_reader->Read 4" << std::endl;
+
       dataset_reader->AdjustDatasetTime();
-      std::cout << "AddSegmentData 5" << std::endl;
+
       AddSegmentData(dataset_reader);
     }
 

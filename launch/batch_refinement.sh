@@ -15,6 +15,7 @@ total_size="100" #längd på rosbag
 
 
 
+roscore &
 #Algorithm
 counter="0"
 for ((i=5; i+window_size <= total_size; i+=shift_step))
@@ -24,13 +25,14 @@ do
   end=$((i+window_size))
   echo "Window: [$start, $end)"
   
-  output_dir_counter="${output_dir}/${counter}/"
+  output_dir_counter="${output_dir}/${counter}_from_${start}_to_${end}/"
+#  echo "Window: [$start, $end)">>${output_dir_counter}/info.txt
   echo "$output_path"
   mkdir -p ${output_dir_counter} 
   output_path="${output_dir_counter}"
   pars="--config_file ${config_file} --start_time ${start} --end_time ${end} --output_path ${output_path} " 
   echo "  rosrun oa_licalib li_calib_node  $pars"
-  rosrun oa_licalib li_calib_node ${pars} &> /dev/null
+  rosrun oa_licalib li_calib_node ${pars} #&> /dev/null
 done
 
 

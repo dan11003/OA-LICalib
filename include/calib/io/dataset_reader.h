@@ -82,6 +82,7 @@ inline bool loadmsg(const std::string bag_path, const std::string topic,
   time_init += ros::Duration(bag_start);
   ros::Time time_finish = (bag_durr < 0) ? view_full.getEndTime()
                                          : time_init + ros::Duration(bag_durr);
+  std::cout << "time init: " << time_init << ", time_finish: " << time_finish << std::endl;
   view.addQuery(bag, rosbag::TopicQuery(topics), time_init, time_finish);
 
   // Check to make sure we have data to play
